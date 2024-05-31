@@ -1,0 +1,228 @@
+{% extends "layout.html" %} {% block content %}
+
+<div class="mt-4 space-y-4 w-full">
+  <div class="fixed bottom-4 right-4">
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 transform hover:scale-110"
+      onclick="togglePostForm()"
+      title="Post now"
+    >
+      <div class="flex items-center justify-center h-full">
+        <span class="hidden">Post now</span>
+        <i class="fas fa-plus"></i>
+      </div>
+    </button>
+  </div>
+  <div class="fixed bottom-4 left 10">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" onclick="toggleChat()">
+      <i class="fas fa-comment"></i>
+    </button>
+    <div class="bg-white rounded-lg p-4 shadow-lg" id="chat" style="display:none">
+      <div class="flex flex-col-reverse">
+        <div class="flex items-center justify-end">
+          <div class="flex flex-col space-y-2">
+            <div class="bg-gray-200 rounded p-2">
+              Hello, how can I help you?
+            </div>
+            <div class="flex items-center">
+              <div class="rounded-full bg-blue-500 h-4 w-4"></div>
+              <div class="ml-2 text-gray-500">Chatbot</div>
+            </div>
+          </div>
+        </div>
+        <form class="flex items-center" onsubmit="sendMessage(event)">
+          <input type="text" id="chatMessage" placeholder="Type your message" class="rounded-full border p-2 mr-2" />
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="fixed bottom-4 left-4">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" onclick="toggleHelp()">
+      <i class="fas fa-info-circle"></i>
+    </button>
+    <div class="bg-white rounded-lg p-4 shadow-lg" id="help" style="display:none">
+      <p>This is a help section where you can find information about the app.</p>
+    </div>
+  </div>
+  <div class="fixed bottom-0 right-0 m-4" id="postForm">
+    <div class="bg-white rounded-lg p-4 shadow-lg">
+      <div class="flex justify-between items-center">
+        <form method="POST" action="{% url 'posts' %}" class="space-y-4 w-full" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class ="flex items-center">
+            <input type="text" name="title" placeholder="What's on your mind?" class="w-full p-2">
+          </div>
+          <div class="flex items-center">
+            <textarea
+              class="w-full p-2 resize-none border border-gray-300 rounded-md"
+              name="content"
+              placeholder="Share your thoughts"
+              rows="4"
+            ></textarea>
+          </div>
+          <div class="flex items-center space-x-2">
+            <label for="image" class="block w-1/2 text-center border border-dashed border-gray-300 rounded-md p-4 cursor-pointer">
+              <i class="fas fa-camera mr-2"></i> Add Photo
+              <input type="file" name="image" id="image" class="hidden">
+            </label>
+            <label for="video" class="block w-1/2 text-center border border-dashed border-gray-300 rounded-md p-4 cursor-pointer">
+              <i class="fas fa-video mr-2"></i> Add Video
+              <input type="file" name="video" id="video" class="hidden">
+            </label>
+          </div>
+          <button
+            class="block w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            type="submit"
+          >
+            Post
+          </button>
+        </form>
+        <div class="absolute top-0 right-0 m-2">
+          <button class="" onclick="togglePostForm()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% for post in posts %}
+  <div class="mx-auto space-y-4 w-full max-w-xl p-4">
+    <div class="bg-white rounded-lg p-4 hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center">
+        <div class="flex-1">
+          <a href="{% url 'user_profile' post.author.username post.author.pk %}">
+            <img 
+            src="{{ post.author.profile.image.url }}"
+            class="w-12 h-12 rounded-full mr-2"
+          /><p class="text-lg font-bold">{{post.author}}</p>
+
+          </a>
+          <p class="text-gray-500">{{post.created_at}}</p>
+        </div>
+      </div>
+      <div class="relative">
+        <p class="text-lg">{{post.title}}</p>
+        <p class="text-gray-500">{{post.content}}</p>
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="w-full h-80 rounded-lg object-cover" />
+        <a href="{{ post.image.url }}" class="opacity-0 absolute inset-0 z-10"
+           data-fancybox="roadtrip"></a>
+        {% endif %}
+        {% if post.video %}
+        <video src="{{ post.video.url }}" class="w-full h-80 rounded-lg object-cover" controls></video>
+        <a href="{{ post.video.url }}" class="opacity-0 absolute inset-0 z-10"
+           data-fancybox="roadtrip"></a>
+        {% endif %}
+        <div class="absolute inset-0 z-0 bg-gray-900 opacity-0 hover:opacity-70
+                        transition-opacity duration-300"></div>
+        <div class="absolute inset-0 z-0 flex items-center justify-center
+                        transition-opacity duration-300 opacity-0 hover:opacity-100">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5q0 1.037 1.036 2l3.586-3.586a2 2 0 012.828 0l3.586 3.586a2 2 0 012.828 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-2">
+        <div class="flex items-center">
+          <form action="{% url 'like_post' post.id %}" method="post" class="flex items-center">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-thumbs-up"></i></button>
+          </form>
+          <p class="text-gray-600 text-sm">{{ post.like_count }} likes</p>
+        </div>
+        <div class="flex items-center">
+          <button class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-comment"></i></button>
+        </div>
+        <div class="flex items-center">
+          <div class="" id="shareForm">
+            <form action="{% url 'share_post' post_id=post.id %}" method="post" class="flex items-center">
+              {% csrf_token %}
+            <button  type="submit" class="text-gray-500 hover:text-blue-500 text-sm" onclick="toggleShareForm(event)"><i class="fas fa-share"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endfor %}
+
+{% for share_post in share_posts %}
+<div class="mx-auto space-y-4 w-full max-w-xl">
+  <div class="bg-white rounded-lg p-4">
+    <div class="flex items-center">
+      <img src="{{ share_post.author.profile.image.url }}" class="w-10 h-10 rounded-full" alt="">
+      <div class="ml-4">
+        <p class="text-gray-900 font-bold">{{ share_post.author.username }}</p>
+        <p class="text-gray-600 text-sm">Shared a post</p>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="flex items-center">
+        <div class="flex-1">
+          <a href="{% url 'user_profile' share_post.post.author.username share_post.post.author.pk %}">
+            <img
+            src="{{ share_post.post.author.profile.image.url }}"
+            class="w-12 h-12 rounded-full mr-2"
+          />
+          </a>
+
+          <p class="text-lg font-bold">{{share_post.post.author}}</p>
+          <p class="text-gray-500">{{share_post.post.created_at}}</p>
+          <div class="relative">
+            <img src="{{ share_post.post.image.url }}" class="w-full h-80 rounded-lg object-cover" />
+            <a href="{{ share_post.post.image.url }}" class="opacity-0 absolute inset-0 z-10"
+               data-lightbox="roadtrip"></a>
+            <div class="absolute inset-0 z-0 bg-gray-900 opacity-0 hover:opacity-70
+                            transition-opacity duration-300"></div>
+            <div class="absolute inset-0 z-0 flex items-center justify-center
+                            transition-opacity duration-300 opacity-0 hover:opacity-100">
+              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5q0 1.037 1.036 2l3.586-3.586a2 2 0 012.828 0l3.586 3.586a2 2 0 012.828 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+          </div>
+          </a>
+          {% if share_post.post.video %}
+          <video controls class="w-full mt-4">
+            <source src="{{ share_post.post.video.url }}" type="{{ share_post.post.video.mimetype }}">
+          </video>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center">
+          <form action="{% url 'like_post' share_post.post.id %}" method="post" class="flex items-center">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-thumbs-up"></i></button>
+          </form>
+        </div>
+        <div class="flex items-center">
+          <button class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-comment"></i></button>
+        </div>
+        <div class="flex items-center">
+          <button class="text-gray-500 hover:text-blue-500 text-sm"><i class="fas fa-share"> {{ share_post.like_count }}</i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+</div>
+  <script>
+    function togglePostForm() {
+      const postForm = document.getElementById("postForm");
+      postForm.classList.toggle("hidden");
+    }
+  </script>
+
+  {% endblock %}

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Profile</h1>
+
+<div class ="bg-white rounded-lg p-4">
+    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+            <img id="profileImage" src="{{profile.image.url}}" class="block mt-2 w-20 h-20 rounded-full center">
+
+            <label for="Profile Image" class="block text-gray-700 text-sm font-bold mb-2">Profile Image</label>
+            <input type="file" name="image" id="image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewImage(this)" value="{{user.image.url}}">
+            <button type="button" onclick="removeImage()">Remove</button>
+            <img id="profileImagePreview" src="{{profile.image.url}}" class="block mt-2 w-20 h-20 rounded-full center" style="display:none">
+        </div>
+        <script>
+            function previewImage(input) {
+                var file = input.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var preview = document.getElementById('profileImagePreview');
+                    preview.src = reader.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+
+            function removeImage() {
+                document.getElementById('image').value = null;
+                var preview = document.getElementById('profileImagePreview');
+                preview.src = '';
+                preview.style.display = "none";
+            }
+        </script>
+        
+        <div class="mb-4">
+            <label for="cover-image" class="block text-gray-700 text-sm font-bold mb-2">Cover Image</label>
+            <input type="file" name="cover" id="cover-image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewCoverImage(this)" value="{{user.cover.url}}">
+            <button type="button" onclick="removeCoverImage()">Remove</button>
+            <img id="coverImage" src="{{profile.cover.url}}" class="block mt-2 w-full h-40 rounded-lg center" style="display:none">
+        </div>
+        <script>
+            function previewCoverImage(input) {
+                var file = input.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var preview = document.getElementById('coverImage');
+                    preview.src = reader.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+
+            function removeCoverImage() {
+                document.getElementById('cover-image').value = null;
+                var preview = document.getElementById('coverImage');
+                preview.src = '';
+                preview.style.display = "none";
+            }
+        </script>
+        <div class="mb-6">
+            <label for="bio" class="block text-gray-700 text-sm font-bold mb-2">Bio</label>
+            <textarea id="bio" name="bio" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ profile.bio }}</textarea>
+        </div>
+        <div class="mb-4">
+            <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+            <select name="gender" id="gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{user.gender}}">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Update</button>
+            <a href="{% url 'index' %}" class="text-blue-500 hover:text-blue-800">Cancel</a>
+        </div>
+    </form>
+</div>
+</div>
+
+{% endblock %}

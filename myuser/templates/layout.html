@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nepagram  V 1.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.0/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  
+</head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+   
+  </head>
+  <header class="bg-gray-800 p-4">
+    <nav class="flex items-center justify-between">
+      <a href="{% url 'index' %}" class="text-white text-2xl font-bold">Nepagram V 1.0</a>
+
+      <div class="flex items-center">
+        <a href="#" class="text-white hover:text-yellow-500 mx-2">
+          <i class="fas fa-gamepad"></i>
+        </a>
+        <a href="#" class="text-white hover:text-yellow-500 mx-2">
+          <i class="fas fa-video"></i>
+        </a>
+        <a href="#" class="text-white hover:text-yellow-500 mx-2">
+          <i class="fas fa-music"></i>
+        </a>
+      </div>
+      <div class="relative w-full md:w-1/2 lg:w-1/4">
+        <form action="{% url 'search' %}" method="post" class="flex items-center justify-between bg-white rounded-full px-4 py-2 shadow focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50 transition-all duration-300 ease-in-out">
+          {% csrf_token %}
+          <input type="text" name="searched" id="search" placeholder="Search Facebook" class="w-full rounded-full bg-transparent text-sm placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent" onclick="this.parentElement.classList.add('w-[320px]')" onblur="this.parentElement.classList.remove('w-[320px]')">
+          <button type="submit" class="relative flex items-center justify-center w-12 h-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+        </form>
+      
+      </div>
+      
+      
+      
+
+      <div class="flex items-center"> <a href="#" onclick="toggleUser(event)" class="text-white hover:text-yellow-500 mx-2">
+        <i class="fas fa-user"></i>
+    </a>
+      
+
+   
+
+    <div class="absolute top-10 right-0 bg-white rounded-lg p-4 hidden" id="user">
+        <h2 class="font-bold text-lg">{{request.user}}</h2>
+        <ul>
+
+            <li class="text-gray-500 py-2 border-b border-gray-300">
+                <a href = "" class="hover:text-yellow-500">Profile</a>
+            </li>  
+            <li class="text-gray-500 py-2 border-b border-gray-300">
+                <a href="{% url 'profile' %}" class="hover:text-yellow-500">Account Settings</a>
+            </li>
+            <li class="text-gray-500 py-2 border-b border-gray-300">
+                <a href="{% url 'logout' %}" class="hover:text-yellow-500">Logout</a>
+            </li>
+        </ul>
+        <i class="fas fa-times text-gray-500 hover:text-red-500 absolute top-2 right-2 cursor-pointer" onclick="toggleUser(event)"></i>
+    </div>
+       
+        <a href="#" class="text-white hover:text-yellow-500 mx-2" onclick="toggleNotification(event)">
+            <i class="fas fa-bell"></i>
+        </a>
+        
+        <a href="#" class="text-white hover:text-yellow-500 mx-2" onclick="toggleFriend(event)">
+            <i class="fas fa-user-friends"></i>
+        </a>
+        <div class="absolute top-10 right-0 bg-white rounded-lg p-4 hidden" id="notification">
+            <h2 class="font-bold text-lg">Notifications</h2>
+            <a href = " ">
+            <ul>
+            </ul>
+            </a>
+            <i class="fas fa-times text-gray-500 hover:text-red-500 absolute top-2 right-2 cursor-pointer" onclick="toggleNotification(event)"></i>
+        </div>
+
+    
+        <a href="{% url 'profile' %}" class="text-white hover:text-yellow-500 mx-2"
+        ><i class="fas fa-cog"></i
+      ></a>
+        <a href="#" class="text-white hover:text-yellow-500 mx-2"
+          ><i class="fas fa-question-circle"></i
+        ></a>
+        <a href="#" class="text-white hover:text-yellow-500 mx-2"
+          ><i class="fas fa-info-circle"></i
+        ></a>
+      </div>
+    </nav>
+  </header>
+  
+  <body class="h-full">
+    <div class="h-full flex">
+        <aside
+        class="md:w-64 bg-gray-800 p-4 hidden md:block md:flex md:flex-shrink-0"
+        id="sidebar"
+    >
+        <nav class="space-y-1 md:w-full md:h-full md:flex-1">
+            <a
+                href="#"
+                class="block px-4 py-2 text-white hover:bg-gray-700 hover:text-white w-full md:w-auto"
+            >
+            
+                <i class="fas fa-arrow-left hover:text-yellow-500"></i>
+                <span class="ml-2">Hide</span>
+            </a>
+            <a
+                href="#"
+                class="block px-4 py-2 text-white hover:bg-gray-700 hover:text-white w-full md:w-auto"
+            >
+                <i class="fas fa-home hover:text-yellow-500"></i>
+                <span class="ml-2">Home</span>
+            </a>
+    
+            <a 
+                href="#"
+                class=" block px-4 py-2 text-white hover:bg-gray-700 hover:text-white w-full md:w-auto"
+            >
+                <i class="fas fa-bell hover:text-yellow-500"></i>
+                <span class="ml-2">Notifications</span>
+            </a>
+            {% for notification in notifications %}
+            <div
+                class="absolute top-10 right-0 bg-white rounded-lg p-4 hidden"
+                id="notification"
+            >
+                <h2 class="font-bold text-lg">Notifications</h2>
+                <ul>
+                  {% if notification.follow %}
+                  <li class="text-gray-500 py-2 border-b border-gray-300">
+                 {{notification.follow}}
+  
+                  </li>
+                {% endif %}
+                  {% if notification.like %}
+                  <li class="text-gray-500 py-2 border-b border-gray-300">
+                    <p>{{ notification.author.username }} liked your post.</p>
+  
+                  </li>
+                  {% endif %}
+                  {% if notification.comment %}
+                  <li class="text-gray-500 py-2 border-b border-gray-300">
+                    <p>{{ notification.author.username }} commented on your post.</p>
+  
+                  </li>
+                  {% endif %}
+                  {% if notification.mention %}
+                  <li class="text-gray-500 py-2 border-b border-gray-300">
+                    <p>{{ notification.author.username }} mentioned you in their post.</p>
+  
+                  </li>
+                  {% endif %}
+                </ul>
+                <i
+                    class="fas fa-times text-gray-500 hover:text-red-500 absolute top-2 right-2 cursor-pointer"
+                    onclick="toggleNotification(event)"
+                ></i>
+            </div>
+
+            {% endfor %}
+    </aside>
+    
+    
+ 
+  
+      <main class="flex-1 p-4 md:p-8 bg-gray-100 justify-center overflow-y-scroll scroll-smooth">
+        <div class="duration-300">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+    
+  </body>
+</html>
+<script>
+    function toggleNotification(event) {
+      const notification = document.getElementById("notification");
+      notification.classList.toggle("hidden");
+    }
+    function toggleUser(event) {
+        
+        const user = document.getElementById("user");
+        user.classList.toggle("hidden");
+    }
+  </script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("hidden");
+    }
+  </script>
+  <script>
+    Fancybox.bind("[data-fancybox]", {
+      dragToClose: false,
+      Toolbar: false,
+      closeButton: "top",
+    });
+    
+  </script>
+  <script>
+    function toggleChat() {
+      var chat = document.getElementById("chat");
+      chat.style.display = chat.style.display === "none" ? "block" : "none";
+    }
+    
+    function sendMessage(event) {
+      event.preventDefault();
+      var chat = document.getElementById("chat");
+      var message = document.getElementById("chatMessage").value;
+      var messageDiv = document.createElement("div");
+      messageDiv.classList.add("flex", "items-center", "justify-end");
+      messageDiv.innerHTML = `
+        <div class="flex flex-col space-y-2">
+          <div class="bg-gray-200 rounded p-2">
+            ${message}
+          </div>
+          <div class="flex items-center">
+            <div class="rounded-full bg-blue-500 h-4 w-4"></div>
+            <div class="ml-2 text-gray-500">Chatbot</div>
+          </div>
+        </div>`;
+      chat.appendChild(messageDiv);
+      document.getElementById("chatMessage").value = "";
+    }
+  </script>
+  
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"
+></script>
+<script src="https://cdn.jsdelivr.net/npm/fancybox@4.0.6/dist/jquery.fancybox.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>

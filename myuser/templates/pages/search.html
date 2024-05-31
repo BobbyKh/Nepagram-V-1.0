@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mx-auto">
+  <div class="flex items-center justify-center h-screen">
+    <div class="w-full max-w-xs">
+      
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% if searched %}
+        <p>You searched for: <strong>{{ searched }}</strong></p>
+        {% if posts %}
+            <ul>
+                {% for post in posts %}
+                    <li>
+                        <h2>{{ post.title }}</h2>
+                        <p>{{ post.content }}</p>
+                        <p>Author: {{ post.author.username }}</p>
+                        
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="Post image">
+                        {% else %}
+                            <p>No image available</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No posts found matching your search.</p>
+        {% endif %}
+    {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

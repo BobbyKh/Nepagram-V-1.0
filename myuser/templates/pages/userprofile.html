@@ -1,0 +1,143 @@
+{% extends "layout.html" %}  
+
+{% block content %}
+
+<div class="bg-cover bg-center h-64" style="background-image: url('{{ profile.cover.url }}')"></div>
+  <div class="flex items-center justify-center">
+    <div class="w-1/2">
+      <img class="rounded-full w-32 h-32"  src="{{ profile.image.url }}" alt="Profile Image">
+      <h1 class="text-2xl font-bold mt-2">{{ profile.user.username }}</h1>
+      <p class="text-gray-500">{{ profile.bio }}</p>
+    </div>
+  </div>
+  
+  <div class="flex items-center justify-center">
+    <div class="w-1/2">
+        <form action="{% url 'follow' profile.user.username profile.user.pk %}" method="post">
+            {% csrf_token %}
+            {% if profile != request.user %}
+            {% if is_following %}
+                    <input type="hidden" name="unfollow" value="True">
+                    <button type="submit" class="flex items-center text-blue-500 hover:text-blue-600">
+                        <i class="fas fa-user-minus mr-2"></i>
+                        Unfollow
+                    </button>
+                {% else %}
+                    <button type="submit" class="flex items-center text-blue-500 hover:text-blue-600">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Follow
+                    </button>
+                {% endif %}
+            {% endif %}
+        </form>
+
+        <div class="flex items-center">
+            <div class="flex items-center">
+                <i class="fas fa-eye mr-2" onclick="toggleFollowersList()"></i>
+              
+                <div class="fixed bottom-0 right-0 m-4" id="followersList" style="display:none">
+                    <div class="bg-white rounded-lg p-4 shadow-lg">
+                        <h3 class="text-2xl font-bold mb-2">Followers</h3>
+                        <ul class="space-y-2">
+                                {% for follow in followers %}
+                                    <li>
+                                        <div class="flex items-center">
+                                            <img class="rounded-full w-10 h-10 mr-2" src="{{ follow.follower.profile.image.url }}" alt="Profile Image">
+                                            <a href="{% url 'user_profile' follow.follower.username follow.follower.pk %}" class="text-gray-900 hover:text-blue-600">{{ follow.follower.username }}</a>
+                                        </div>
+                                    </li>
+                                {% endfor %} 
+                        </ul>
+                    </div>
+                </div>
+                <p class="mr-4">Followers: {{ follower_count }} </p>
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-user-friends mr-2" onclick="toggleFollowingsList()"></i>
+                <div class="fixed bottom-0 right-0 m-4" id="followingsList" style="display:none">
+                    <div class="bg-white rounded-lg p-4 shadow-lg">
+                        <h3 class="text-2xl font-bold mb-2">Followings</h3>
+                        <ul class="space-y-2">
+                                {% for follow in following %}
+                                    <li>
+                                        <div class="flex items-center">
+                                            <img class="rounded-full w-10 h-10 mr-2" src="{{ follow.following.profile.image.url }}" alt="Profile Image">
+                                            <a href="{% url 'user_profile' follow.following.username follow.following.pk %}" class="text-gray-900 hover:text-blue-600">{{ follow.following.username }}</a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <p>Followings: {{ following_count }}</p>
+            </div>
+        </div>
+        
+        
+        
+        
+      </div>
+  </div>
+  <div class="flex items-center justify-center">
+    <div class="w-1/2">
+      <h2 class="text-xl font-bold mt-2">Posts</h2>
+      {% for post in posts %}
+        <div class="bg-white rounded-lg p-4 mt-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img class="rounded-full w-10 h-10" src="{{ profile.image.url }}" alt="Profile Image">
+              <div class="ml-2">
+                <p class="text-gray-900 font-bold">{{ post.author }}</p>
+                <p class="text-gray-600 text-sm">{{ post.created_at|date:"F j, Y, P" }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <button class="text-gray-500 hover:text-blue-500 text-sm"><i class="fas fa-ellipsis-h"></i></button>
+            </div>
+          </div>
+          <div class="mt-2">
+            <h3 class="text-lg font-bold">{{ post.title }}</h3>
+            <p class="text-gray-600">{{ post.content }}</p>
+            <img class="rounded-lg w-full h-auto mt-2" src="{{ post.image.url }}" alt="Post Image">
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center">
+              <button class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-thumbs-up"></i></button>
+              <p class="text-gray-600 text-sm">12 likes</p>
+            </div>
+          
+            <div class="flex items-center">
+              <button class="text-gray-500 hover:text-blue-500 text-sm mr-2"><i class="far fa-comment"></i></button>
+            </div>
+
+            <div class="flex items-center">
+                <button class="text-gray-500 hover:text-blue-500 text-sm"><i class="fas fa-share"></i></button>
+              </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+ 
+  <script>
+    function toggleFollowersList() {
+        const followersList = document.getElementById('followersList');
+        if (followersList.style.display === 'none') {
+            followersList.style.display = 'block';
+        } else {
+            followersList.style.display = 'none';
+        }
+    }
+    function toggleFollowingsList() {
+        const followingsList = document.getElementById('followingsList');
+        if (followingsList.style.display === 'none') {
+            followingsList.style.display = 'block';
+        } else {
+            followingsList.style.display = 'none';
+        }
+    }
+    
+</script>
+{% endblock %}
